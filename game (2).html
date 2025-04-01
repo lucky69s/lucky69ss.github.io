@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #7f8c8d;
+            margin: 5px 0;
+            font-weight: normal;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input {
+            padding: 10px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 80%;
+            max-width: 300px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 15px 0;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .card {
+            display: inline-block;
+            width: 60px;
+            height: 90px;
+            margin: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 90px;
+            font-weight: bold;
+            font-size: 20px;
+            position: relative;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            transition: transform 0.3s;
+            background: white;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card::before {
+            content: attr(data-suit);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .card::after {
+            content: attr(data-suit);
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 14px;
+            line-height: 1;
+            transform: rotate(180deg);
+        }
+
+        .card[data-suit="s"],
+        .card[data-suit="c"] {
+            color: black;
+        }
+
+        .card[data-suit="h"],
+        .card[data-suit="d"] {
+            color: #e74c3c;
+        }
+
+        .player-area {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .player-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .player-points {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .winner {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .suit-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .suit-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .suit-icon {
+            font-weight: bold;
+        }
+
+        .suit-icon.black {
+            color: black;
+        }
+
+        .suit-icon.red {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Card Game</h1>
+        
+        <div class="suit-info">
+            <div class="suit-item">
+                <div class="suit-icon black">♠</div>
+                <span>Spades</span>
+            </div>
+            <div class="suit-item">
+                <div class="suit-icon black">♣</div>
+                <span>Clubs</span>
+            </div>
+            <div class="suit-item">
+                <div class="suit-icon red">♦</div>
+                <span>Diamonds</span>
+            </div>
+            <div class="suit-item">
+                <div class="suit-icon red">♥</div>
+                <span>Hearts</span>
+            </div>
+        </div>
+
+        <!-- Input for number of players and player names -->
+        <div class="input-group">
+            <label for="numPlayers">How many players are playing?</label>
+            <input type="number" id="numPlayers" min="1" max="4" placeholder="Enter number (1-4)">
+        </div>
+        <div class="input-group">
+            <label for="playerNames">Enter player names (comma-separated):</label>
+            <input type="text" id="playerNames" placeholder="e.g. Alice, Bob, Charlie">
+        </div>
+
+        <!-- Button to start the game -->
+        <button onclick="startGame()">Start Game</button>
+
+        <!-- Display the result -->
+        <div id="gameResult" class="result"></div>
+    </div>
+
+    <script>
+        const suits = ['s', 'd', 'h', 'c'];
+        const common = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '1', '0'];
+        const spade = ['2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s', 'Js', 'Qs', 'Ks', 'As'];
+        const club = ['2c', '3c', '4c', '5c', '6c', '7c', '8c', '9c', '10c', 'Jc', 'Qc', 'Kc', 'Ac'];
+        const diamond = ['2d', '3d', '4d', '5d', '6d', '7d', '8d', '9d', '10d', 'Jd', 'Qd', 'Kd', 'Ad'];
+        const heart = ['2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', 'Jh', 'Qh', 'Kh', 'Ah'];
+        let all = [];
+        all = all.concat(spade, club, diamond, heart);
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+            }
+        }
+
+        function startGame() {
+            const numPlayers = parseInt(document.getElementById('numPlayers').value);
+            const playerNames = document.getElementById('playerNames').value.split(',').map(name => name.trim());
+
+            if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 4) {
+                alert("Please enter a valid number of players (1-4).");
+                return;
+            }
+
+            if (numPlayers !== playerNames.length || playerNames.some(name => name === "")) {
+                alert("Number of players does not match the player names count or some names are empty.");
+                return;
+            }
+
+            shuffleArray(all);
+
+            let gameData = {};
+            let count = 0;
+            let players = [];
+            let poi = {};
+            let rand = [];
+
+            // Distribute cards to players
+            playerNames.forEach((player, index) => {
+                gameData[player] = all.slice(count, count + 3);
+                count += 3;
+                players.push(gameData[player]);
+            });
+
+            // Calculate points
+            playerNames.forEach(player => {
+                rand.push(points(gameData[player]));
+            });
+
+            let tempo = check(rand, players);
+            playerNames.forEach((player, i) => {
+                poi[player] = tempo[i];
+            });
+
+            // Determine the winner
+            let maxPoints = Math.max(...Object.values(poi));
+            let winners = Object.keys(poi).filter(key => poi[key] === maxPoints);
+            let winner = winners.length === 1 ? winners[0] : "It's a tie between " + winners.join(" and ");
+
+            displayResult(gameData, winner, poi, winners.length > 1);
+        }
+
+        function check(play, gamers) {
+            let updatedPoints = [];
+            for (let i = 0; i < play.length - 1; i++) {
+                if (play[i] === play[i + 1]) {
+                    updatedPoints.push(highcard2(gamers[i]));
+                } else {
+                    updatedPoints.push(play[i]);
+                }
+            }
+            if (play[play.length - 1] === play[play.length - 2]) {
+                updatedPoints.push(highcard2(gamers[gamers.length - 1]));
+            } else {
+                updatedPoints.push(play[play.length - 1]);
+            }
+            return updatedPoints;
+        }
+
+        function color(trial) {
+            let sets = [];
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (!common.includes(j)) {
+                        sets.push(j);
+                    }
+                }
+            }
+            return (new Set(sets).size === 1) ? 1000 : 0;
+        }
+
+        function trail(trial) {
+            let temp = [];
+            let st = "";
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (common.includes(j)) {
+                        st += j;
+                    }
+                }
+                temp.push(st);
+                st = "";
+            }
+            return (new Set(temp).size === 1) ? 100000 : 0;
+        }
+
+        function sequence(trial) {
+            let numbers = [];
+            let temp = [];
+            let common1 = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            let st = "";
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (common.includes(j)) {
+                        st += j;
+                    }
+                }
+                temp.push(st);
+                st = "";
+            }
+            if (temp.includes('A') && temp.includes('2')) {
+                common1.pop(13);
+            } else {
+                common1.pop(0);
+            }
+            for (let i of temp) {
+                numbers.push(common1.indexOf(i));
+            }
+            numbers.sort();
+            return (numbers[0] + 1 === numbers[1] && numbers[1] + 1 === numbers[2]) ? 10000 : 0;
+        }
+
+        function highcard(trial) {
+            let temp = [];
+            let st = "";
+            let common1 = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            let numbers = [];
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (common.includes(j)) {
+                        st += j;
+                    }
+                }
+                temp.push(st);
+                st = "";
+            }
+            if (temp.includes('A') && temp.includes('2')) {
+                common1.pop(13);
+            } else {
+                common1.pop(0);
+            }
+            for (let i of temp) {
+                numbers.push(common1.indexOf(i) + 2);
+            }
+            numbers.sort();
+            return numbers[2];
+        }
+
+        function pair(trial) {
+            let temp = [];
+            let st = "";
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (common.includes(j)) {
+                        st += j;
+                    }
+                }
+                temp.push(st);
+                st = "";
+            }
+            return (new Set(temp).size === 2) ? 100 : 0;
+        }
+
+        function highcard2(trial) {
+            let temp = [];
+            let st = "";
+            let common1 = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            let numbers = [];
+            trial.sort();
+            for (let i of trial) {
+                for (let j of i) {
+                    if (common.includes(j)) {
+                        st += j;
+                    }
+                }
+                temp.push(st);
+                st = "";
+            }
+            if (temp.includes('A') && temp.includes('2')) {
+                common1.pop(13);
+            } else {
+                common1.pop(0);
+            }
+            for (let i of temp) {
+                numbers.push(common1.indexOf(i) + 2);
+            }
+            numbers.sort();
+            return numbers[1];
+        }
+
+        function points(i) {
+            let sum = 0;
+            sum += color(i);
+            sum += pair(i);
+            sum += trail(i);
+            sum += highcard(i);
+            sum += highcard2(i);
+            sum += sequence(i);
+            return sum;
+        }
+
+        function displayResult(gameData, winner, poi, isTie) {
+            let result = "<h2>Game Results</h2>";
+            
+            // Sort players by points (descending)
+            const sortedPlayers = Object.keys(gameData).sort((a, b) => poi[b] - poi[a]);
+            
+            for (let player of sortedPlayers) {
+                const isWinner = !isTie && player === winner || isTie && winner.includes(player);
+                
+                result += `<div class="player-area ${isWinner ? 'winner' : ''}">`;
+                result += `<div class="player-name">${player}</div><div>`;
+                
+                gameData[player].forEach(card => {
+                    const value = card.slice(0, -1);
+                    const suit = card.slice(-1);
+                    let suitSymbol = '';
+                    
+                    switch(suit) {
+                        case 's': suitSymbol = '♠'; break;
+                        case 'c': suitSymbol = '♣'; break;
+                        case 'd': suitSymbol = '♦'; break;
+                        case 'h': suitSymbol = '♥'; break;
+                    }
+                    
+                    result += `<div class="card" data-suit="${suit}" data-value="${value}">${value}<span style="display:none">${suitSymbol}</span></div>`;
+                });
+                
+                result += `<div class="player-points">Points: ${poi[player]}</div>`;
+                result += `</div></div>`;
+            }
+
+            result += `<h2 class="${!isTie ? 'winner' : ''}" style="margin-top: 30px;">${!isTie ? `The winner is: ${winner} with ${poi[winner]} points!` : winner}</h2>`;
+            document.getElementById('gameResult').innerHTML = result;
+            
+            // Update card symbols after they're added to DOM
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const suit = card.getAttribute('data-suit');
+                    const value = card.getAttribute('data-value');
+                    let suitSymbol = '';
+                    
+                    switch(suit) {
+                        case 's': suitSymbol = '♠'; break;
+                        case 'c': suitSymbol = '♣'; break;
+                        case 'd': suitSymbol = '♦'; break;
+                        case 'h': suitSymbol = '♥'; break;
+                    }
+                    
+                    card.innerHTML = `${value}<div style="font-size:14px;position:absolute;top:5px;left:5px;">${suitSymbol}</div><div style="font-size:14px;position:absolute;bottom:5px;right:5px;transform:rotate(180deg);">${suitSymbol}</div>`;
+                });
+            }, 10);
+        }
+    </script>
+</body>
+</html>
